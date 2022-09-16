@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+
+  jenkins_updateagent:
+    image: wsyu52/jenkins-update-agent:latest
+    container_name: jenkins_updateagent
+
+  jenkins_service:
+    image: jenkins/jenkins:lts-alpine
+    container_name: jenkins_service
+    volumes:
+      - ./jenkins_home:/var/jenkins_home
+    ports:
+      - "8080:8080"
+    links:
+      - jenkins_updateagent:jenkins_updateagent
+    environment:
+      JAVA_OPTS: -Dhudson.model.DownloadService.noSignatureCheck=true
+
+
+# 使用说明
+# 获取初始密码 docker exec -it jenkins_service cat /var/jenkins_home/secrets/initialAdminPassword
+# 更新服务器地址修改为 http://jenkins_updateagent:8888/update-center.json
